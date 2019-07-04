@@ -8,11 +8,11 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
     <!--
-     true:  your app runs on only TV
+     true:  your app runs on only TV which use Leanback UI
      false: your app runs on phone and TV -->
     <uses-feature
         android:name="android.software.leanback"
-        android:required="true" />
+        android:required="false" />
 
     <uses-feature
         android:name="android.hardware.type.television" android:required="true" >
@@ -38,7 +38,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+                <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
 

@@ -16,7 +16,7 @@ android {
         variant ->
             variant.outputs.all {
                 // 此处指定生成的apk文件名
-                outputFileName = "shela.apk"
+                outputFileName = "CFDTV.apk"
             }
     }
 
