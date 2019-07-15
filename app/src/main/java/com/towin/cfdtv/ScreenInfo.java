@@ -12,7 +12,7 @@ public class ScreenInfo {
         CurrType = currType;
     }
 
-    public int PlanCapacity;
-    public int CurrCapacity;
-    public String CurrType;
+    public int PlanCapacity;    //计划产能
+    public int CurrCapacity;    //当前产能
+    public String CurrType;     //当前型号
 }

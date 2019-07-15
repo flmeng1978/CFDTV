@@ -13,8 +13,7 @@ public class IP_Station_MAP {
 
     public static String getIP(String station){
         map = new HashMap<String,String>();
-//        map.put("射蜡"+'\0',"10.10.2.10");
-        map.put("射蜡"+'\0',"192.168.43.111");
+        map.put("射蜡"+'\0',"10.10.2.10");
         map.put("修模"+'\0',"10.10.3.10");
         map.put("組树"+'\0',"10.10.5.10");
         map.put("清洗"+'\0',"10.10.7.10");

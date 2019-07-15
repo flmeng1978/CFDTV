@@ -27,9 +27,9 @@ public class MainActivity extends AppCompatActivity {
     private int mcPort = 6000;              //组播端口
     private String mcAddr = "224.1.1.1";    //组播地址
 
-    private WifiManager.MulticastLock multicastLock;
+    private WifiManager.MulticastLock multicastLock;    //多播锁
 
-    private ScreenInfo info;
+    private ScreenInfo info;    //接收UDP传来的显示信息
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         multicastLock.setReferenceCounted(true);
         multicastLock.acquire();
 
-        //获取TexView控件对象
+        //界面上的TexView控件对象
         tv_planCapacityNum = (TextView)findViewById(R.id.tv_planCapacityNum);
         tv_currCapacityNum = (TextView)findViewById(R.id.tv_currCapacityNum);
         tv_currTypeText = (TextView)findViewById(R.id.tv_currTypeText);
@@ -54,27 +54,27 @@ public class MainActivity extends AppCompatActivity {
         udp = new UDP(this, mcPort, mcAddr);
         udp.listen(true);
 
-        //必须开启线程异步更新Texview
+        //必须在主线程中更新Texview，而不能在UDP线程的receive()函数中更新界面
         Thread t=new Thread(){
             @Override
             public void run(){
-            while(!isInterrupted()){
-                try {
-                    Thread.sleep(100);  //1000ms = 1 sec
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                        if(info!=null) {
-                            tv_planCapacityNum.setText(String.valueOf(info.PlanCapacity));
-                            tv_currCapacityNum.setText(String.valueOf(info.CurrCapacity));
-                            tv_currTypeText.setText(info.CurrType);
-                        }
-                        }
-                    });
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                while(!isInterrupted()){
+                    try {
+                        Thread.sleep(100);  //间隔刷新界面
+                        runOnUiThread(new Runnable() {  //主线程中更新界面
+                            @Override
+                            public void run() {
+                                if(info!=null) {
+                                    tv_planCapacityNum.setText(String.valueOf(info.PlanCapacity));
+                                    tv_currCapacityNum.setText(String.valueOf(info.CurrCapacity));
+                                    tv_currTypeText.setText(info.CurrType);
+                                }
+                            }
+                        });
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
             }
         };
         t.start();

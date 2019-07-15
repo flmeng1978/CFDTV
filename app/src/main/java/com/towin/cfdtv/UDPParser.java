@@ -11,8 +11,10 @@ import java.io.UnsupportedEncodingException;
 ===========================================================*/
 public class UDPParser {
 
+    //返回值null：表明无效包或错包
     public static ScreenInfo parse(byte[] data) {
         UDPMsg udpMsg = new UDPMsg();
+        ScreenInfo info;
 
         //UDP头部消息
         udpMsg.StartCode = BitConverter.toInt(data, 0);
@@ -35,11 +37,11 @@ public class UDPParser {
             udpMsg.CurrType = new String(bits,"UTF-8");     //当前型号
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            return null;
         }
 
         //
         int IPMsgLen = 0;
-        String station = "清洗"+'\0';
         for(int i=contentStart+8+typeMsgLen;;i++){
             IPMsgLen++;
             if(data[i]=='\0') //当前类型信息为可变长度，以'\0'结束
@@ -47,21 +49,23 @@ public class UDPParser {
         }
         try {
             byte bits[] = BitConverter.copyFrom(data,contentStart+8+typeMsgLen,IPMsgLen);
-            station = new String(bits,"UTF-8");         //工位
+            udpMsg.station = new String(bits,"UTF-8");         //工位
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            return null;
         }
 
-        String ip = IP_Station_MAP.getIP(station);  //根据工位查询对应的大屏电视ip
-        ScreenInfo info;
-        if(ip==null) return null;
+        String ip = IP_Station_MAP.getIP(udpMsg.station);  //根据工位查询对应的大屏电视ip
+
+        if(ip==null) return null;  //无效包
+
         if(ip.equals(LocalHost.getHostIP())) {      //是传给本大屏的信息吗
-            info = new ScreenInfo(0,0,"-");
+           info = new ScreenInfo(0,0,"-");
             info.PlanCapacity = udpMsg.PlanCapacity;
             info.CurrCapacity = udpMsg.CurrCapacity;
             info.CurrType = udpMsg.CurrType;
             return info;
         }else
-            return null;
+            return null;    //不是传给本机的包，视为无效包
     }
 }
